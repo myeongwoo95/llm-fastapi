@@ -19,8 +19,10 @@ from starlette.responses import StreamingResponse
 
 # Local imports
 import models
-import schemas
+from domain.user import user_schema as schemas
 from database import SessionLocal, engine
+
+from domain.user import user_router
 
 # create_all = 테이블이 없으면 생성
 # drop_all = 기존 테이블 삭제
@@ -47,6 +49,8 @@ app = FastAPI()
 origins = [
     "http://localhost:8000", "http://localhost:3000"
 ]
+
+app.include_router(user_router.router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -131,57 +135,3 @@ async def stream_response(message: Message):
             yield f"data: Error: {str(e)}\n\n"
 
     return StreamingResponse(event_stream(), media_type="text/event-stream")
-
-@app.post("/auth/register")
-async def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    if db.query(models.User).filter(models.User.email == user.email).first():
-        raise HTTPException(status_code=400, detail="Email already registered")
-
-    hashed_password = get_password_hash(user.password)
-
-    db_user = models.User(
-        name=user.name,
-        email=user.email,
-        hashed_password=hashed_password,
-    )
-    db.add(db_user)
-    db.commit()
-
-    return {"message": "Registration successful"}
-
-
-@app.post("/auth/login")
-async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = db.query(models.User).filter(models.User.email == form_data.name).first()
-    if not user or not verify_password(form_data.password, user.hashed_password):
-        raise HTTPException(status_code=400, detail="Incorrect email or password")
-
-    access_token = create_access_token(
-        data={"sub": user.email}
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
-
-
-async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
-        if email is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
-
-    user = db.query(models.User).filter(models.User.email == email).first()
-    if user is None:
-        raise credentials_exception
-    return user
-
-
-@app.get("/users/me")
-async def read_users_me(current_user: models.User = Depends(get_current_user)):
-    return current_user
