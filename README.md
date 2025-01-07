@@ -16,10 +16,12 @@
 
 ### 설치
     pip install fastapi[all] langchain langchain-openai langchain-community python-dotenv alembic
-    pip install "uvicorn[standard]"
+    pip install uvicorn[standard]
     pip install sqlalchemy pymysql python-jose[cryptography] passlib[bcrypt] python-multipart
-    pip install "pydantic[email]"
-    pip install "passlib[bcrypt]"
+    pip install pydantic[email]
+    pip install passlib[bcrypt]
+    pip install python-multipart python-jose[cryptography]
+
 
 ### 서버 실행
     uvicorn main:app --reload

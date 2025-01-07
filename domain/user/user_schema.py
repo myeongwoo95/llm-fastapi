@@ -7,7 +7,17 @@ class UserBase(BaseModel):
     name: str
     email: EmailStr
 
-# 회원가입 모델
+
+# 완전한 유저 모델
+class User(UserBase):
+    is_active: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# 회원가입 : Request
 class UserCreate(BaseModel):
     name: str
     email: EmailStr
@@ -19,10 +29,10 @@ class UserCreate(BaseModel):
             raise ValueError('빈 값은 허용되지 않습니다.')
         return v
 
-# 완전한 유저 모델
-class User(UserBase):
-    is_active: bool
-    created_at: datetime
 
-    class Config:
-        from_attributes = True
+# 로그인 : Response
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    name: str
+

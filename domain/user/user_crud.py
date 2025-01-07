@@ -18,7 +18,7 @@ def create_user(db: Session, user_create: UserCreate):
     db.commit()
 
 def get_existing_user(db: Session, user_create: UserCreate):
-    return db.query(User).filter(
-        or_(User.name == user_create.name,
-            User.email == user_create.email)
-    ).first()
+    return db.query(User).filter(User.email == user_create.email).first()
+
+def get_user(db: Session, email: str):
+    return db.query(User).filter(User.email == email).first()
