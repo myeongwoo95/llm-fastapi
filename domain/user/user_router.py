@@ -32,7 +32,7 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(),
 
     # make access token
     data = {
-        "sub": user.username,
+        "sub": user.email,
         "exp": datetime.now() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     }
     access_token = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
@@ -40,7 +40,9 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(),
     return {
         "access_token": access_token,
         "token_type": "bearer",
-        "username": user.username
+        "id": user.id,
+        "name": user.name,
+        "email": user.email
     }
 
 
