@@ -1,5 +1,11 @@
 from datetime import datetime
 from pydantic import BaseModel, EmailStr, field_validator
+from enum import Enum
+
+# 사용자 역할 정의
+class UserRole(str, Enum):
+    ADMIN = "admin"
+    USER = "user"
 
 # 기본 모델
 class UserBase(BaseModel):
@@ -12,6 +18,7 @@ class UserBase(BaseModel):
 class User(UserBase):
     is_active: bool
     created_at: datetime
+    role: UserRole
 
     class Config:
         from_attributes = True

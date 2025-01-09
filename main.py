@@ -3,11 +3,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import os
 from dotenv import load_dotenv
-from pydantic import BaseModel
-from langchain_core.callbacks import StreamingStdOutCallbackHandler
-from langchain.chat_models import ChatOpenAI
-from langchain.schema import HumanMessage
-from starlette.responses import StreamingResponse
 import models
 from database import engine
 from domain.chat import chat_router

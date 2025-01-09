@@ -2,12 +2,15 @@ import os
 import sys
 
 from dotenv import load_dotenv
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from langchain_core.callbacks import StreamingStdOutCallbackHandler
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
 from starlette.responses import StreamingResponse
 from domain.chat import chat_schema
+from domain.user.user_auth import check_roles
+from domain.user.user_schema import UserRole
+from domain.user import user_schema
 
 router = APIRouter(
     prefix="/api/chat",
@@ -34,7 +37,10 @@ class CustomStreamingHandler(StreamingStdOutCallbackHandler):
 
 
 @router.post("/stream")
-async def stream_response(message: chat_schema.UserMessage):
+async def stream_response(
+        message: chat_schema.UserMessage,
+        _: user_schema.User = Depends(check_roles([UserRole.USER]))
+):
     async def event_stream():
         try:
             chat = ChatOpenAI(

@@ -1,8 +1,7 @@
 from passlib.context import CryptContext
 from models import User
 from sqlalchemy.orm import Session
-from domain.user.user_schema import UserCreate
-from sqlalchemy import or_
+from domain.user.user_schema import UserCreate, UserRole
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -11,9 +10,11 @@ def get_user_list(db: Session):
     return user_list
 
 def create_user(db: Session, user_create: UserCreate):
-    db_user = User(name=user_create.name,
-                   email=user_create.email,
-                   password=pwd_context.hash(user_create.password))
+    db_user = User(
+        name=user_create.name,
+        email=user_create.email,
+        password=pwd_context.hash(user_create.password),
+    )
     db.add(db_user)
     db.commit()
 

@@ -45,8 +45,8 @@ import models
 target_metadata = models.Base.metadata
 ```
 
+### 최초 설정
 ```shell
-# 최초 설정
 alembic init migrations
 
 # 새로운 리비전(마이그레이션) 생성
@@ -54,18 +54,6 @@ alembic revision --autogenerate -m "create users table" # -> 이 명령은 model
 
 # 마이그레이션 실행 (가장 최신 버전으로)
 alembic upgrade head # -> 실제 데이터베이스에 테이블이 생성됨
-
-# 특정 리비전으로 이동
-alembic upgrade {revision_id}
-
-# 이전 버전으로 롤백
-alembic downgrade -1
-
-# 현재 리비전 확인
-alembic current
-
-# 마이그레이션 히스토리 보기
-alembic history
 ```
 
 ### DB 수정 후
@@ -78,6 +66,21 @@ alembic upgrade head
 
 # 만약 특정 버전으로 돌아가고 싶다면: 
 alembic upgrade <리비전 ID>
+```
+
+### 명령어
+```shell
+# 특정 리비전으로 이동
+alembic upgrade {revision_id}
+
+# 이전 버전으로 롤백
+alembic downgrade -1
+
+# 현재 리비전 확인
+alembic current
+
+# 마이그레이션 히스토리 보기
+alembic history
 ```
 
 ### 의존성 주입
